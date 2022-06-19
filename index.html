@@ -71,7 +71,7 @@ function get_random_indexes(start, end){
 	return indexes;
 }
 
-function get_hash(test_id, pic_id) {
+function get_hash(test_id, pic_id, is_answer) {
 	// pictures are stored with hashed names. pic_id is defined like this:
 	// puzzle examples: 
 	// 01 -> 02 -> 03
@@ -83,6 +83,9 @@ function get_hash(test_id, pic_id) {
 	// 12, 13, 14
 	// 15, 16, 17
 	// 18, 19, 20
+	if (is_answer) {
+		pic_id += 11; // answers are hashed with pic_id from 12 to 20
+	}
 	let pic_id_with_leading_zero = (pic_id < 10 ? "0" : "") + pic_id;
 	return md5("" + test_id + pic_id_with_leading_zero);
 }
@@ -90,11 +93,8 @@ function get_hash(test_id, pic_id) {
 function get_picture_path(test_id, pic_id, is_answer) {
 	if (!is_answer && pic_id === 12) {
 		return "images/questionmark.png";
-	} 
-	if (is_answer) {
-		pic_id += 11; // answers are hashed with pic_id from 12 to 20
 	}
-	let hash = get_hash(test_id, pic_id);
+	let hash = get_hash(test_id, pic_id, is_answer);
 	return "tests/test" + test_id + "/" + hash + ".png";
 }
 
@@ -148,7 +148,7 @@ function show_answers(test_id){
 		html += "<div>";	
 		for (let p = 0; p < 3; p++){
 			pic_id = random_indexes.shift();
-			const hash = get_hash(test_id, pic_id)
+			const hash = get_hash(test_id, pic_id, true);
 			const picture_path = get_picture_path(test_id, pic_id, true);
 			html += "<img class='icon' onclick=\"submit_answer(" + test_id + ", '" + hash + "')\" src=\"" + picture_path + "\">";
 		}
